@@ -8,8 +8,8 @@ include_once __DIR__ . '/Resource.php';
 class Translation {
   private $data = [];
 
-  public static function setResourceDir(string $path) {
-    Resource::setPath($path);
+  public static function setup(string $resourcePath, ?string $defaultLocale = 'en-US') {
+    Resource::setup($resourcePath, $defaultLocale);
   }
 
   public function __construct(string $locale = 'en-US', string $file = 'messages.json') {
@@ -27,6 +27,12 @@ class Translation {
 
     $keys = $this->parseKey($key);
 
+    // Default (en-US) locale: Use key as text, if un exist translate file.
+    if ( empty($data) ) {
+      $message = end($keys);
+      return $this->makeReplacements($message, $replace);
+    }
+
     try {
       $message = array_reduce($keys, function(array $carry, string $key) {
         if ( !isset($carry[$key]) ) {
@@ -43,25 +49,21 @@ class Translation {
       throw new \OutOfBoundsException("Invalid key: '{$key}'");
     }
 
-    if ( is_null($replace) ) {
-      return $message;
-    }
-
     // replace placeholder
-    if ( is_array($replace) ) {
-      return $this->makeReplacements($message, $replace);
-    }
-
-    throw new InvalidArgumentException('Placeholders have to be an array to return a formatted localized message');
+    return $this->makeReplacements($message, $replace);
   }
 
   public function __e(string $key, array $replace = null): void {
     echo $this->__($key, $replace);
   }
 
-  protected function makeReplacements($line, array $replace): string {
+  protected function makeReplacements(string $line, array $replace = null): string {
     if ( empty($replace) ) {
       return $line;
+    }
+
+    if ( !is_array($replace) ) {
+      throw new \InvalidArgumentException('Placeholders have to be an array to return a formatted localized message');
     }
 
     $placeholders = [];
