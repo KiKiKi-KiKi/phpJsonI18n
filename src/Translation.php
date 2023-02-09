@@ -19,9 +19,9 @@ class Translation {
 
   /**
    * @param string $key: The key of localized text (json)
-   * @param string|array $placeholders: The text to be replaced within the localized text
+   * @param string[] $replace: The text to be replaced within the localized text
    */
-  public function __(string $key, $placeholders = null): string {
+  public function __(string $key, array $replace = null): string {
     // copy array
     $data = $this->data;
 
@@ -29,8 +29,7 @@ class Translation {
 
     $message = array_reduce($keys, function(array $carry, string $key) {
       if ( !isset($carry[$key]) ) {
-        // throw new \OutOfBoundsException("Invalid key: '{$key}'");
-        return $carry;
+        throw new \OutOfBoundsException("Invalid key: '{$key}'");
       }
 
       return $carry[$key];
@@ -40,23 +39,33 @@ class Translation {
       throw new \OutOfBoundsException("Invalid key: '{$key}'");
     }
 
-    if ( is_null($placeholders) ) {
+    if ( is_null($replace) ) {
       return $message;
     }
 
     // replace placeholder
-    if ( is_array($placeholders) ) {
-      return vsprintf($message, $placeholders);
+    if ( is_array($replace) ) {
+      return $this->makeReplacements($message, $replace);
     }
 
-    if ( is_string($placeholders) || is_float($placeholders) || is_int($placeholders) ) {
-      return sprintf($message, $placeholders);
-    }
-
-    throw new InvalidArgumentException('Placeholders have to be a string or array to return a formatted localized message');
+    throw new InvalidArgumentException('Placeholders have to be an array to return a formatted localized message');
   }
 
-  public function __e(string $key, $placeholders = null): void {
-    echo $this->__($key, $placeholders);
+  public function __e(string $key, array $replace = null): void {
+    echo $this->__($key, $replace);
+  }
+
+  protected function makeReplacements($line, array $replace): string {
+    if ( empty($replace) ) {
+      return $line;
+    }
+
+    $placeholders = [];
+
+    foreach($replace as $key => $value) {
+      $placeholders[':' . $key] = $value;
+    }
+
+    return strtr($line, $placeholders);
   }
 }
