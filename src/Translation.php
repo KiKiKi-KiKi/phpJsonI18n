@@ -27,13 +27,17 @@ class Translation {
 
     $keys = explode('.', $key);
 
-    $message = array_reduce($keys, function(array $carry, string $key) {
-      if ( !isset($carry[$key]) ) {
-        throw new \OutOfBoundsException("Invalid key: '{$key}'");
-      }
+    try {
+      $message = array_reduce($keys, function(array $carry, string $key) {
+        if ( !isset($carry[$key]) ) {
+          throw new \OutOfBoundsException("Invalid key: '{$key}'");
+        }
 
-      return $carry[$key];
-    }, $data);
+        return $carry[$key];
+      }, $data);
+    } catch ( \OutOfBoundsException $exception ) {
+      $message = end($keys);
+    }
 
     if ( is_array($message) ) {
       throw new \OutOfBoundsException("Invalid key: '{$key}'");
