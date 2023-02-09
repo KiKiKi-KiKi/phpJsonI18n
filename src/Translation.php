@@ -25,7 +25,7 @@ class Translation {
     // copy array
     $data = $this->data;
 
-    $keys = explode('.', $key);
+    $keys = $this->parseKey($key);
 
     try {
       $message = array_reduce($keys, function(array $carry, string $key) {
@@ -71,5 +71,14 @@ class Translation {
     }
 
     return strtr($line, $placeholders);
+  }
+
+  // Translation JSON file just allow nest single group.
+  protected function parseKey(string $key): array {
+    if (preg_match('/[^\s]\.[^\s$]/', $key)) {
+      return explode('.', $key, 2);
+    } else {
+      return [$key];
+    }
   }
 }
