@@ -1,37 +1,12 @@
 <?php
 namespace KikikiKiKi\jsonI18n;
 
-include_once __DIR__ . '/LocaleConverter.php';
-
 class FileLoader {
-  private static $resourcePath;
-
-  public static function setPath(string $path) {
-    if ( !is_dir($path) ) {
-      throw new \InvalidArgumentException('Invalid resource path');
-    }
-
-    self::$resourcePath = $path;
+  public function loadResource(string $file): array {
+    return $this->loadFile( $file );
   }
 
-  public static function getPath(): string {
-    return self::$resourcePath;
-  }
-
-  private $data = [];
-
-  public function getData() {
-    return $this->data;
-  }
-
-  public function __construct(string $locale, string $file) {
-    $path = self::getPath();
-    $locale = new LocaleConverter($locale);
-    $lang = $locale->getLocale();
-
-    $data = $this->loadFile( "{$path}/{$lang}/{$file}" );
-    $this->data = $data;
-  }
+  public function __construct() {}
 
   private function convertJsonToArray(string $input): array {
     // Json to Array
