@@ -1,0 +1,23 @@
+{
+  "name": "kikiki-kiki/json-i18n",
+  "type": "standard",
+  "description": "Simple PHP i18n library using JSON file.",
+  "homepage": "https://github.com/KiKiKi-KiKi/phpJsonI18n",
+  "authors": [
+    {
+      "name": "@KiKiKi-KiKi"
+    }
+  ],
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "KikikiKiKi\\jsonI18n\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "KikikiKiKi\\jsonI18n\\": "tests/"
+    }
+  },
+  "require": {}
+}
